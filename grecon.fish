@@ -61,9 +61,9 @@ function grecon --description "Gladde Reconning: OSCP recon sweep (nmap chain + 
     echo "Launching scans in parallel..."
     echo
 
-    __grecon_nmap $tip $outdir &
-    __grecon_gobuster $tip 80 $outdir &
-    __grecon_gobuster $tip 443 $outdir &
+    fish -c "source $__grecon_src; __grecon_nmap $tip $outdir" &
+    fish -c "source $__grecon_src; __grecon_gobuster $tip 80 $outdir" &
+    fish -c "source $__grecon_src; __grecon_gobuster $tip 443 $outdir" &
 
     wait
     echo
