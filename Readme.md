@@ -1,8 +1,6 @@
-# grecon.fish
-
 > **Gladde Reconning** — OSCP initial recon sweep
 
-## Load it
+## Load it once
 
 ```fish
 source ./grecon.fish   # then run: grecon
