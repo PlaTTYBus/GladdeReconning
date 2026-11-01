@@ -6,6 +6,19 @@ if test -z "$target"
 end
 set -U tip $target
 
+# fresh random workdir per box; wipe the previous one (only if it's one of ours)
+if set -q gdir; and string match -qr '^/tmp/grecon\.[A-Za-z0-9]+$' -- $gdir; and test -d $gdir
+    echo "Removing old workdir: $gdir"
+    rm -rf -- $gdir
+end
+set -U gdir (mktemp -d /tmp/grecon.XXXXXXXX)
+or begin
+    echo "Could not create a workdir in /tmp. Aborting."
+    exit 1
+end
+cd $gdir
+echo "Workdir: $gdir  (in your shell: cd \$gdir)"
+
 read -P "Interface [tun0]: " iface
 test -z "$iface"; and set iface tun0
 set -l myip (ip -4 -o addr show dev $iface 2>/dev/null | string match -rg 'inet (\S+?)/')
@@ -54,4 +67,21 @@ end
 echo
 echo "nmap chain done; waiting for gobuster to finish..."
 wait
-echo "All scans complete. Results in $outdir/"
+echo "All scans complete. Results in $gdir/output/"
+
+# put "cd <workdir>" on the clipboard so the user can just paste it
+set -l cdcmd "cd $gdir"
+set -l copied 0
+if set -q WAYLAND_DISPLAY; and command -q wl-copy
+    printf '%s' $cdcmd | wl-copy; and set copied 1
+else if command -q xclip
+    printf '%s' $cdcmd | xclip -selection clipboard; and set copied 1
+else if command -q xsel
+    printf '%s' $cdcmd | xsel --clipboard --input; and set copied 1
+end
+if test $copied -eq 1
+    echo "Copied to clipboard: $cdcmd  (paste + Enter to jump there)"
+else
+    echo "No clipboard tool found (wl-copy/xclip/xsel). Run: $cdcmd"
+end
+

@@ -20,8 +20,18 @@ grecon
 
 ## Output
 
-Outputs land in `./output/` (relative to the current directory), greppable where
-the tool allows.
+Each run creates a fresh random workdir `/tmp/grecon.XXXXXXXX`, saved as the
+universal variable `gdir`, and removes the previous run's workdir. Outputs
+land in `$gdir/output/`, in greppable format where the tool supports it.
+
+Because the script runs as its own process, it can't change your shell's
+directory. When the scans finish, it copies `cd <workdir>` to your clipboard
+(via `wl-copy`, `xclip` or `xsel`), so you can paste and press Enter. Otherwise
+run:
+
+```fish
+cd $gdir
+```
 
 ## Requirements
 
