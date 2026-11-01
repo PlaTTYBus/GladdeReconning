@@ -19,9 +19,10 @@ cp ./grecon.fish ~/.local/bin/grecon
 
 ## Output
 
-Each run creates a fresh random workdir `/tmp/grecon.XXXXXXXX`, saved as the
-universal variable `gdir`, and removes the previous run's workdir. Outputs
-land in `$gdir/output/`, in greppable format where the tool supports it.
+Each run creates a new random workdir `~/grecon/XXXXXXXX` and points the
+universal variable `gdir` at it. Old workdirs are never deleted, so clean up
+`~/grecon/` yourself when you're done with a box. Outputs land in
+`$gdir/output/`, in greppable format where the tool supports it.
 
 When the scans finish, it copies `cd <workdir>` to your clipboard
 (via `wl-copy`, `xclip` or `xsel`, depending on the environment), so you can paste and press Enter. Otherwise

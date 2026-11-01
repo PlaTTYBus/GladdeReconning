@@ -6,14 +6,12 @@ if test -z "$target"
 end
 set -U tip $target
 
-# fresh random workdir per box; wipe the previous one (only if it's one of ours)
-if set -q gdir; and string match -qr '^/tmp/grecon\.[A-Za-z0-9]+$' -- $gdir; and test -d $gdir
-    echo "Removing old workdir: $gdir"
-    rm -rf -- $gdir
-end
-set -U gdir (mktemp -d /tmp/grecon.XXXXXXXX)
+# fresh random workdir per box under ~/grecon/ (old ones are kept)
+mkdir -p $HOME/grecon
+and set -l newdir (mktemp -d $HOME/grecon/XXXXXXXX)
+and set -U gdir $newdir
 or begin
-    echo "Could not create a workdir in /tmp. Aborting."
+    echo "Could not create a workdir in $HOME/grecon. Aborting."
     exit 1
 end
 cd $gdir
