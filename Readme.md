@@ -23,6 +23,14 @@ chmod +x grecon.fish
 cp ./grecon.fish ~/.local/bin/grecon  
 ```
 
+Or symlink it instead, so a `git pull` updates the installed command automatically
+(keep the repo where it is, the link points to it):
+
+```fish
+chmod +x grecon.fish
+ln -sf (realpath grecon.fish) ~/.local/bin/grecon
+```
+
 ## Output
 
 Each run creates a new random workdir `~/grecon/XXXXXXXX` and points the
