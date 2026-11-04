@@ -19,7 +19,6 @@ If rustscan isn't installed, the script falls back to nmap automatically.
 ## Or install as a global `grecon` command
 
 ```fish
-chmod +x grecon.fish 
 cp ./grecon.fish ~/.local/bin/grecon  
 ```
 
@@ -27,7 +26,6 @@ Or symlink it instead, so a `git pull` updates the installed command automatical
 (keep the repo where it is, the link points to it):
 
 ```fish
-chmod +x grecon.fish
 ln -sf (realpath grecon.fish) ~/.local/bin/grecon
 ```
 
