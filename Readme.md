@@ -10,20 +10,14 @@ use nmap.
 ## Run it
 
 ```fish
-fish grecon.fish          # full port sweep with rustscan
-fish grecon.fish --nmap   # full port sweep with nmap instead
+grecon          # full port sweep with rustscan
+grecon --nmap   # full port sweep with nmap instead
 ```
 
 If rustscan isn't installed, the script falls back to nmap automatically.
 
-## Or install as a global `grecon` command
-
-```fish
-cp ./grecon.fish ~/.local/bin/grecon  
-```
-
-Or symlink it instead, so a `git pull` updates the installed command automatically
-(keep the repo where it is, the link points to it):
+## Install
+This will install the script as a symlink so that `git pull` keeps it updated:
 
 ```fish
 ln -sf (realpath grecon.fish) ~/.local/bin/grecon
