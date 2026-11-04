@@ -1,4 +1,21 @@
 #!/usr/bin/env fish
+argparse h/help nmap -- $argv
+or exit 1
+if set -q _flag_help
+    echo "Usage: grecon [--nmap]"
+    echo "  --nmap   use nmap instead of rustscan for the full port sweep"
+    exit 0
+end
+
+# full port sweep: rustscan by default, nmap with --nmap or if rustscan is missing
+set -l sweeper rustscan
+if set -q _flag_nmap
+    set sweeper nmap
+else if not command -q rustscan
+    echo "rustscan not found - falling back to nmap for the full port sweep."
+    set sweeper nmap
+end
+
 read -P "Target IP: " target
 if test -z "$target"
     echo "No target IP given. Aborting."
@@ -39,17 +56,24 @@ gobuster dir -w /usr/share/wordlists/dirb/big.txt -u http://$tip:80 \
 gobuster dir -w /usr/share/wordlists/dirb/big.txt -u http://$tip:443 \
     -x html,txt,pdf,php -q -o $outdir/gobuster-443.txt &
 
-echo "[nmap] 1/3 full port scan (all 65535, open only)..."
-nmap -p- --open -T4 -Pn -oG $outdir/nmap-ports.grep $tip >/dev/null
-
-# pull open ports out of the greppable output -> "22,80,443"
-set -l ports (grep -oE '[0-9]+/open' $outdir/nmap-ports.grep \
-    | string replace '/open' '' | string join ,)
+set -l ports
+if test $sweeper = rustscan
+    echo "[rustscan] 1/3 full port scan (all 65535)..."
+    rustscan -a $tip -r 1-65535 --ulimit 5000 -g >$outdir/rustscan-ports.txt 2>/dev/null
+    # greppable output: "10.10.11.5 -> [22,80,443]" -> "22,80,443"
+    set ports (string match -rg '\[([0-9,]+)\]' <$outdir/rustscan-ports.txt | string join ,)
+else
+    echo "[nmap] 1/3 full port scan (all 65535, open only)..."
+    nmap -p- --open -T4 -Pn -oG $outdir/nmap-ports.grep $tip >/dev/null
+    # pull open ports out of the greppable output -> "22,80,443"
+    set ports (grep -oE '[0-9]+/open' $outdir/nmap-ports.grep \
+        | string replace '/open' '' | string join ,)
+end
 
 if test -z "$ports"
-    echo "[nmap] no open ports found - skipping service/vuln scans."
+    echo "[$sweeper] no open ports found - skipping service/vuln scans."
 else
-    echo "[nmap] open ports: $ports"
+    echo "[$sweeper] open ports: $ports"
     echo "[nmap] 2/3 service + default-script scan on found ports..."
     nmap -sV -sC -Pn -p $ports \
         -oN $outdir/nmap-services.txt \

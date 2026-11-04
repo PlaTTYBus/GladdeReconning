@@ -2,13 +2,19 @@
 
 Prompts for the target IP and your interface, saves them as
 universal variables (`tip` / `mip`, available in every fish terminal), then runs
-an nmap chain and two gobuster scans in parallel.
+a port scan chain and two gobuster scans in parallel.
+
+The full port sweep uses rustscan; the service and vuln scans on the open ports
+use nmap.
 
 ## Run it
 
 ```fish
-fish grecon.fish
+fish grecon.fish          # full port sweep with rustscan
+fish grecon.fish --nmap   # full port sweep with nmap instead
 ```
+
+If rustscan isn't installed, the script falls back to nmap automatically.
 
 ## Or install as a global `grecon` command
 
@@ -35,3 +41,6 @@ cd $gdir
 ## Requirements
 
 `nmap`, `gobuster`, and the `/usr/share/wordlists/dirb/big.txt` wordlist, which are all pre-installed on kali linux.
+
+\* `rustscan` (optional): used for the full port sweep. Without it, or with
+`--nmap`, nmap does the sweep instead.
